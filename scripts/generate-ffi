@@ -58,6 +58,7 @@ bindgen \
     --whitelist-function "archive_entry_set_pathname" \
     --whitelist-function "archive_entry_set_hardlink" \
     --whitelist-function "archive_entry_hardlink" \
+    --whitelist-function "archive_entry_stat" \
     --whitelist-function "archive_set_error" \
     --whitelist-function "archive_error_string" \
     --whitelist-function "archive_errno" \

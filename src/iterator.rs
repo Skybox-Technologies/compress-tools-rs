@@ -24,7 +24,7 @@ struct HeapReadSeekerPipe<R: Read + Seek> {
 /// completion.
 pub enum ArchiveContents {
     /// Marks the start of an entry, either a file or a directory.
-    StartOfEntry(String),
+    StartOfEntry(String, libc::stat),
     /// A chunk of uncompressed data from the entry. Entries may have zero or
     /// more chunks.
     DataChunk(Vec<u8>),
@@ -62,7 +62,7 @@ impl<R: Read + Seek> Iterator for ArchiveIterator<R> {
         };
 
         match &next {
-            ArchiveContents::StartOfEntry(_) => {
+            ArchiveContents::StartOfEntry(_, _) => {
                 self.in_file = true;
                 Some(next)
             }
@@ -225,7 +225,8 @@ impl<R: Read + Seek> ArchiveIterator<R> {
                 let file_name = CStr::from_ptr(ffi::archive_entry_pathname(self.archive_entry))
                     .to_string_lossy()
                     .into_owned();
-                ArchiveContents::StartOfEntry(file_name)
+                let stat = *ffi::archive_entry_stat(self.archive_entry);
+                ArchiveContents::StartOfEntry(file_name, std::mem::transmute(stat))
             }
             _ => ArchiveContents::Err(Error::from(self.archive_reader)),
         }

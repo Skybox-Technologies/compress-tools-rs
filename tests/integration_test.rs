@@ -467,7 +467,7 @@ fn collect_iterate_results(source: std::fs::File) -> Vec<(String, usize)> {
 
     for content in &mut iter {
         match content {
-            ArchiveContents::StartOfEntry(file_name) => {
+            ArchiveContents::StartOfEntry(file_name, _) => {
                 assert!(name.is_empty());
                 assert_eq!(size, 0);
                 name = file_name;
